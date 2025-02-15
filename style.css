@@ -1,0 +1,48 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.col-lg-5{
+    transition: all 0.3s;
+}
+.col-lg-5:hover{
+    transform: scale(1.05);
+    box-shadow: -12px 10px 12px 0px rgba(0,0,0,0.75);
+-webkit-box-shadow: -12px 10px 12px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: -12px 10px 12px 0px rgba(0,0,0,0.75);
+}
+.col-md-4 img:hover{
+    transition: all 0.3s;
+    transform: scale(1.1);
+    
+}
+.hot:hover{
+   
+    transition: all 0.3s;
+    transform: scale(1.040);
+
+}
+.hot1:hover{
+   
+    transition: all 0.3s;
+    transform: scale(1.1);
+
+}
+/* .b1:hover{
+    transition: all 0.3s;
+    transform: scale(1.1);
+
+} */
+
+@keyframes myAnim {
+	0% {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
