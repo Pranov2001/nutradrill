@@ -1,0 +1,137 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - SecureAuth</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 h-screen flex items-center justify-center">
+        <div class="w-full max-w-md bg-white rounded-xl shadow-2xl p-8 transition-all duration-300 hover:shadow-3xl">
+            <div class="flex justify-center mb-8">
+                <img src="assets/images/white logo.png" alt="Logo" class="h-16">
+            </div>
+            
+            <form id="registerForm" class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Full Name</label>
+                    <div class="relative">
+                        <input type="text" id="name" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none transition"
+                            placeholder="John Doe" required>
+                        <i class="fas fa-user absolute right-3 top-4 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Email Address</label>
+                    <div class="relative">
+                        <input type="email" id="email" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none transition"
+                            placeholder="hello@example.com" required>
+                        <i class="fas fa-envelope absolute right-3 top-4 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none transition"
+                            placeholder="••••••••" required>
+                        <i class="fas fa-lock absolute right-3 top-4 text-gray-400"></i>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Minimum 8 characters</p>
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02]">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">Already have an account? 
+                    <a href="login.html" class="text-blue-600 hover:text-blue-800 font-semibold">Sign in</a>
+                </p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading" class="hidden fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mt-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm"></div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyAdHNnWZufChxM9caKliILP8vzIAMwhLCg",
+  authDomain: "nutradrill11.firebaseapp.com",
+  projectId: "nutradrill11",
+  storageBucket: "nutradrill11.firebasestorage.app",
+  messagingSenderId: "67658609098",
+  appId: "1:67658609098:web:a4226454c20f93adae1f33",
+  measurementId: "G-ZV05G24HDR"
+};
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Registration Handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.sendEmailVerification();
+                
+                await database.ref('users/' + userCredential.user.uid).set({
+                    name: name,
+                    email: email,
+                    emailVerified: false,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    lastLogin: null
+                });
+
+                window.location.href = 'verify-email.html';
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // UI Functions
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+    </script>
+</body>
+</html>

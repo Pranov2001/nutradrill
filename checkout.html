@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - NutraDrill</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+    <style>
+        .checkout-container {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .order-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- navbar -->
+    <nav style="background-color: rgb(36, 31, 31);" class="navbar navbar-expand-sm navbar-light  fixed-top">
+        <a class="navbar-brand" href="#">
+            <img src="assets/images/white logo.png" width="50px" alt="">
+        </a>
+        <button class="navbar-toggler bg-white" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon bg-white"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            
+            <li class="nav-item">
+              <a class="nav-link text-white " href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white " href="about.html">About Nutradrill</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white " href="bestseller.html">Bestsellers</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white " href="deals.html">Deals</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white " href="expertadvice.html">Expert advice</a>
+              </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle  text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Products
+              </a>
+              <div style="background-color: rgba(173, 168, 168, 0.726);" class="dropdown-menu " aria-labelledby="navbarDropdown">
+                <a class="dropdown-item " href="protien.html">Protein</a>
+                <a class="dropdown-item" href="#">Gainers</a>
+                <a class="dropdown-item" href="#">Amino-Acids</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Pre-workout</a>
+                <a class="dropdown-item" href="#">Creatine</a>
+              </div>
+            </li>
+          
+          </ul>
+          <!-- <form class="form-inline mr-5 my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search NutraDrill" aria-label="Search">
+            <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+          </form> -->
+          <li style="list-style: none;" class="nav-item mr-4" id="userAuth">
+              <!-- Dynamic content will load here -->
+          </li>
+          <li style="list-style: none;" class="nav-item">
+            <i class="fa-solid fa-cart-shopping fa-lg" style="color: #ffffff;"></i>
+      </li>
+        </div>
+    </nav>
+
+    <div class="checkout-container">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="mb-4">Payment Details</h3>
+                
+                <form id="paymentForm">
+    <div class="form-group">
+        <label>Card Number</label>
+        <input type="text" class="form-control" id="cardNumber"
+               placeholder="4242 4242 4242 4242" required>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Expiry Date</label>
+                <input type="text" class="form-control" id="expiryDate"
+                       placeholder="MM/YY" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>CVV</label>
+                <input type="text" class="form-control" id="cvv"
+                       placeholder="123" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Cardholder Name</label>
+        <input type="text" class="form-control" id="cardName"
+               placeholder="John Doe" required>
+    </div>
+</form>
+
+            </div>
+            
+            <div class="col-md-6">
+                <h3 class="mb-4">Order Summary</h3>
+                <div id="orderSummary">
+                    <!-- Cart Items Will Load Here -->
+                </div>
+                <div class="mt-4 p-3 bg-light rounded">
+                    <div class="d-flex justify-content-between">
+                        <strong>Subtotal:</strong>
+                        <span id="checkoutSubtotal">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <strong>Shipping:</strong>
+                        <span>$5.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <span id="checkoutTotal">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-dark btn-block mt-4" onclick="confirmOrder()">Confirm Order</button>
+    </div>
+
+
+    <!-- Body के अंत में इन्हें जोड़ें -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+
+async function confirmOrder() {
+    const user = firebase.auth().currentUser;
+    if(!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Form values collect करें
+    const paymentDetails = {
+        cardNumber: document.getElementById('cardNumber').value,
+        expiry: document.getElementById('expiryDate').value,
+        cvv: document.getElementById('cvv').value,
+        name: document.getElementById('cardName').value
+    };
+
+    const orderData = {
+        userId: user.uid,
+        items: cart,
+        total: subtotal + 5,
+        payment: paymentDetails,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        shippingAddress: "User Address", // Update this with actual address
+        email: user.email
+    };
+
+    try {
+        // Firestore में order save करें
+        const docRef = await db.collection('orders').add(orderData);
+        
+        // Cart clear करें
+        localStorage.removeItem('cart');
+        
+        // Confirmation page पर redirect करें
+        window.location.href = `thankyou.html?orderId=${docRef.id}`;
+        
+    } catch (error) {
+        console.error('Error saving order:', error);
+        alert('Order failed: ' + error.message);
+    }
+}
+
+
+
+
+        
+// Load Cart Data
+let cart = JSON.parse(localStorage.getItem('cart')) || []; // अतिरिक्त ब्रैकेट हटाया
+let subtotal = 0;
+
+// Render Order Summary
+const orderSummary = document.getElementById('orderSummary');
+
+if (cart.length === 0) {
+    orderSummary.innerHTML = `
+        <div class="alert alert-warning">
+            Your cart is empty! <a href="index.html">Continue shopping</a>
+        </div>
+    `;
+} else {
+    orderSummary.innerHTML = cart.map(item => {
+        // सुनिश्चित करें price नंबर है
+        const price = parseFloat(item.price);
+        subtotal += price * item.quantity;
+        
+        return `
+            <div class="order-item">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="${item.image}" 
+                         class="img-thumbnail" 
+                         style="width: 80px; height: 80px; object-fit: cover;" 
+                         alt="${item.name}">
+                    <div class="ml-3">
+                        <h6>${item.name}</h6>
+                        <div class="d-flex justify-content-between">
+                            <span>$${price.toFixed(2)} x ${item.quantity}</span>
+                            <span>$${(price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // टोटल अपडेट करें
+    document.getElementById('checkoutSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('checkoutTotal').textContent = `$${(subtotal + 5).toFixed(2)}`;
+}
+   
+
+    
+ 
+
+        async function confirmOrder() {
+            const user = firebase.auth().currentUser;
+            if(!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const paymentDetails = {
+                cardNumber: document.querySelector('#paymentForm input:nth-child(1)').value,
+                expiry: document.querySelector('#paymentForm input:nth-child(2)').value,
+                cvv: document.querySelector('#paymentForm input:nth-child(3)').value,
+                name: document.querySelector('#paymentForm input:nth-child(4)').value
+            };
+
+            const orderData = {
+                userId: user.uid,
+                items: cart,
+                total: subtotal + 5,
+                payment: paymentDetails,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                // Save to Firestore
+                const db = firebase.firestore();
+                const docRef = await db.collection('orders').add(orderData);
+                
+                // Clear Cart
+                localStorage.removeItem('cart');
+                
+                // Redirect to confirmation
+                window.location.href = `thankyou.html?orderId=${docRef.id}`;
+                
+            } catch (error) {
+                alert('Error placing order: ' + error.message);
+            }
+
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        }
+    </script>
+    <script>
+        // Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAdHNnWZufChxM9caKliILP8vzIAMwhLCg",
+  authDomain: "nutradrill11.firebaseapp.com",
+  projectId: "nutradrill11",
+  storageBucket: "nutradrill11.firebasestorage.app",
+  messagingSenderId: "67658609098",
+  appId: "1:67658609098:web:a4226454c20f93adae1f33",
+  measurementId: "G-ZV05G24HDR"
+};
+
+// सिर्फ एक बार Initialize करें
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Auth State Listener
+auth.onAuthStateChanged((user) => {
+    const userAuth = document.getElementById('userAuth');
+    if (user) {
+        // User logged in - show name and dropdown
+        userAuth.innerHTML = `
+            <div class="dropdown">
+                <span class="text-white dropdown-toggle" data-toggle="dropdown" style="cursor:pointer">
+                    ${user.displayName || user.email}
+                </span>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="profile.html">Profile</a>
+                    <a class="dropdown-item" href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        `;
+    } else {
+        // User not logged in - show login link
+        userAuth.innerHTML = '<a href="login.html" class="text-white">Login</a>';
+    }
+});
+
+// Logout Function
+function logout() {
+    auth.signOut()
+        .then(() => {
+            window.location.href = 'login.html';
+        })
+        .catch((error) => {
+            console.error('Logout error:', error);
+        });
+}
+</script>
+
+
+<script>
+
+
+
+
+// Add to Cart Functionality
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Get product details
+        const product = {
+            id: Date.now().toString(),
+            name: button.dataset.name,
+            price: parseFloat(button.dataset.price),
+            image: button.dataset.image,
+            quantity: 1
+        };
+
+        // Get existing cart
+        
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Check if product exists
+        const existingIndex = cart.findIndex(item => item.name === product.name);
+        if(existingIndex > -1) {
+            cart[existingIndex].quantity += 1;
+        } else {
+            cart.push(product);
+        }
+
+        // Update localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        // Update cart count
+        updateCartCount();
+        
+        // Redirect to cart page
+        window.location.href = 'cart.html';
+    });
+});
+</script>
+
+
+
+
+<script>
+// Quick View Functionality
+document.querySelectorAll('.quick-view').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // डेटा निकालें
+        const imgSrc = this.dataset.image;
+        const productName = this.dataset.name;
+        const description = this.dataset.description;
+
+        // मोडल कंटेंट अपडेट करें
+        document.getElementById('modalImage').src = imgSrc;
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('productDescription').textContent = description;
+
+        // मोडल दिखाएं
+        $('#quickViewModal').modal('show');
+    });
+});
+
+function updateCartCount() {
+    const cartCount = document.getElementById('cartCount');
+    if(!cartCount) return; // नया चेक जोड़ें
+    
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.textContent = totalItems;
+}
+
+// Update cart count function
+// function updateCartCount() {
+    
+//     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+//     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+//     document.getElementById('cartCount').textContent = totalItems;
+// }
+
+// Initial update when page loads
+document.addEventListener('DOMContentLoaded', updateCartCount);
+</script>
+</body>
+</html>

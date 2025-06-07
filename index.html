@@ -53,16 +53,28 @@
             </li>
           
           </ul>
-          <form class="form-inline mr-5 my-2 my-lg-0">
+          <!-- <form class="form-inline mr-5 my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Search NutraDrill" aria-label="Search">
             <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
-          </form>
-          <li style="list-style: none;" class="nav-item mr-4 ">
-            <i class="fa-solid fa-user fa-lg" style="color: #ffffff;"></i>
+          </form> -->
+          <li style="list-style: none;" class="nav-item mr-4" id="userAuth">
+              <!-- Dynamic content will load here -->
           </li>
-          <li style="list-style: none;" class="nav-item">
+
+          <li style="list-style: none;" class="nav-item position-relative">
+              <a href="cart.html" class="text-decoration-none">
+                  <i class="fa-solid fa-cart-shopping fa-lg" style="color: #ffffff;"></i>
+                  <span id="cartCount" 
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                        style="font-size: 0.6em;">
+                      0
+                  </span>
+              </a>
+          </li>
+
+          <!-- <li style="list-style: none;" class="nav-item">
             <i class="fa-solid fa-cart-shopping fa-lg" style="color: #ffffff;"></i>
-      </li>
+      </li> -->
         </div>
     </nav>
         <!-- carousel -->
@@ -147,7 +159,6 @@
 
                 </div>
 
-
                 <div class="col-md-4">
 
                   <div style="background-color: rgb(36, 31, 31);" class="card border-0 ">
@@ -160,7 +171,6 @@
                   </div>
 
                 </div>
-
 
                 <div class="col-md-4">
 
@@ -234,6 +244,29 @@
 
       </section>
 
+
+      <!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" role="dialog" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="quickViewModalLabel">Product Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalImage" src="" class="img-fluid mb-4" style="max-height: 400px;">
+        <h4 id="productName" class="mb-3"></h4>
+        <p id="productDescription" class="lead"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
       <!-- hot product -->
 
       <section class="container">
@@ -243,26 +276,39 @@
         </div>
 
         <div class="row ">
+          
 
           <div class="hot col-md-3 shadow py-2">
               <div class="d-flex justify-content-between">
                   <span style="background-color: rgb(36, 31, 31);" class=" px-3 rounded text-white"> Sale </span>
                   <span class="text-dark">  Compare </span>
               </div>
-
               <img src="assets/images/labrada product.png" class="img-fluid" alt="">
             
               <p class="h6"> Labrada whey </p>
-
               <div class="d-flex justify-content-between">
                 <span class="text-primary"> $110.00 </span>
-                
+            
               </div>
 
-              <button style="background-color: rgb(36, 31, 31);" class="btn btn-outline-secondary w-100 my-3"> Add to Cart </button>
-              <a style="background-color: rgb(36, 31, 31);" href="#" class="btn btn-outline-secondary w-100"> Quick View </a>
-          </div>
+              <!-- प्रत्येक Add to Cart button को यह structure दें -->
+<button class="btn btn-outline-secondary w-100 my-3 add-to-cart" 
+        data-name="Labrada whey" 
+        data-price="110.00"
+        data-image="assets/images/labrada product.png">
+    Add to Cart
+</button>
 
+              <!-- <a style="background-color: rgb(36, 31, 31);" href="#" class="btn btn-outline-secondary w-100"> Quick View </a> -->
+        <!-- उदाहरण के लिए पहले प्रोडक्ट का बटन -->
+<a style="background-color: rgb(36, 31, 31);" href="#" 
+   class="btn btn-outline-secondary w-100 quick-view"
+   data-image="assets/images/labrada product.png"
+   data-name="Labrada whey"
+   data-description="Premium quality whey protein with 24g protein per serving. Supports muscle recovery and growth. Gluten-free and low in sugar.">
+   Quick View
+</a>
+            </div>
 
           <div class="hot col-md-3 shadow py-2">
             <div class="d-flex justify-content-between">
@@ -279,9 +325,24 @@
              
             </div>
 
-            <button style="background-color: rgb(36, 31, 31);" class="btn btn-outline-secondary w-100 my-3">  Add to Cart </button>
-            <a style="background-color: rgb(36, 31, 31);" href="#" class="btn btn-outline-secondary w-100"> Quick View </a>
-        </div>
+            
+            <!-- प्रत्येक Add to Cart button को यह structure दें -->
+<button class="btn btn-outline-secondary w-100 my-3 add-to-cart" 
+        data-name="Optimum whey" 
+        data-price="150.00"
+        data-image="assets/images/optimum product.png">
+    Add to Cart
+</button>
+           
+<a style="background-color: rgb(36, 31, 31);" href="#" 
+   class="btn btn-outline-secondary w-100 quick-view"
+   data-image="assets/images/optimum product.png"
+   data-name="Optimum whey"
+   data-description="Premium quality whey protein with 24g protein per serving. Supports muscle recovery and growth. Gluten-free and low in sugar.">
+   Quick View
+</a>
+
+          </div>
 
 
         <div class="hot col-md-3 shadow py-2">
@@ -289,19 +350,27 @@
               <span style=" background-color: rgb(36, 31, 31);" class=" px-3 rounded text-white"> Sale </span>
               <span class="text-dark">  Compare </span>
           </div>
-
           <img src="assets/images/healthfarm product.png" class="img-fluid" alt="">
-          
           <p class="h6">Healthfarm whey </p>
-
           <div class="d-flex justify-content-between">
             <span class="text-primary"> $180.00 </span>
-            
           </div>
 
-          <button style=" background-color: rgb(36, 31, 31);" class="btn btn-outline-secondary w-100 my-3">  Add to Cart </button>
-          <a style=" background-color: rgb(36, 31, 31);" href="#" class="btn btn-outline-secondary w-100"> Quick View </a>
-      </div>
+          <button class="btn btn-outline-secondary w-100 my-3 add-to-cart" 
+                  data-name="Healthfarm whey" 
+                  data-price="180.00"
+                  data-image="assets/images/healthfarm product.png">
+              Add to Cart
+          </button>
+                    
+          <a style="background-color: rgb(36, 31, 31);" href="#" 
+            class="btn btn-outline-secondary w-100 quick-view"
+            data-image="assets/images/healthfarm product.png"
+            data-name="Healthfarm whey"
+            data-description="Premium quality whey protein with 24g protein per serving. Supports muscle recovery and growth. Gluten-free and low in sugar.">
+            Quick View
+          </a>
+        </div>
 
 
       <div class="hot col-md-3 shadow py-2">
@@ -595,10 +664,143 @@
     </footer>
 
 
-
-
      <!-- script -->
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+
+
+
+<!-- Body के अंत में Firebase और auth स्क्रिप्ट जोड़ें -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+// Firebase Configuration
+ 
+const firebaseConfig = {
+  apiKey: "AIzaSyAdHNnWZufChxM9caKliILP8vzIAMwhLCg",
+  authDomain: "nutradrill11.firebaseapp.com",
+  projectId: "nutradrill11",
+  storageBucket: "nutradrill11.firebasestorage.app",
+  messagingSenderId: "67658609098",
+  appId: "1:67658609098:web:a4226454c20f93adae1f33",
+  measurementId: "G-ZV05G24HDR"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// Auth State Listener
+auth.onAuthStateChanged((user) => {
+    const userAuth = document.getElementById('userAuth');
+    if (user) {
+        // User logged in - show name and dropdown
+        userAuth.innerHTML = `
+            <div class="dropdown">
+                <span class="text-white dropdown-toggle" data-toggle="dropdown" style="cursor:pointer">
+                    ${user.displayName || user.email}
+                </span>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="profile.html">Profile</a>
+                    <a class="dropdown-item" href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        `;
+    } else {
+        // User not logged in - show login link
+        userAuth.innerHTML = '<a href="login.html" class="text-white">Login</a>';
+    }
+});
+
+// Logout Function
+function logout() {
+    auth.signOut()
+        .then(() => {
+            window.location.href = 'login.html';
+        })
+        .catch((error) => {
+            console.error('Logout error:', error);
+        });
+}
+</script>
+
+<script>
+
+
+
+
+// Add to Cart Functionality
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Get product details
+        const product = {
+            id: Date.now().toString(),
+            name: button.dataset.name,
+            price: parseFloat(button.dataset.price),
+            image: button.dataset.image,
+            quantity: 1
+        };
+
+        // Get existing cart
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Check if product exists
+        const existingIndex = cart.findIndex(item => item.name === product.name);
+        if(existingIndex > -1) {
+            cart[existingIndex].quantity += 1;
+        } else {
+            cart.push(product);
+        }
+
+        // Update localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        // Update cart count
+        updateCartCount();
+        
+        // Redirect to cart page
+        window.location.href = 'cart.html';
+    });
+});
+</script>
+
+
+
+
+<script>
+// Quick View Functionality
+document.querySelectorAll('.quick-view').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // डेटा निकालें
+        const imgSrc = this.dataset.image;
+        const productName = this.dataset.name;
+        const description = this.dataset.description;
+
+        // मोडल कंटेंट अपडेट करें
+        document.getElementById('modalImage').src = imgSrc;
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('productDescription').textContent = description;
+
+        // मोडल दिखाएं
+        $('#quickViewModal').modal('show');
+    });
+});
+
+
+// Update cart count function
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cartCount').textContent = totalItems;
+}
+
+// Initial update when page loads
+document.addEventListener('DOMContentLoaded', updateCartCount);
+</script>
 </body>
 </html>

@@ -3,6 +3,11 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+.product-item {
+    transition: all 0.3s ease;
+}
+
 .col-lg-5{
     transition: all 0.3s;
 }
@@ -45,4 +50,56 @@
 		opacity: 1;
 		transform: scale(1);
 	}
+}
+
+
+
+.modal-content {
+  background-color: #f8f9fa;
+  border-radius: 15px;
+}
+
+#modalImage {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#productName {
+  color: #242424;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+#productDescription {
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+
+.badge {
+    min-width: 1.2rem;
+    padding: 0.25em 0.4em;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+.translate-middle {
+    transform: translate(-50%, -50%);
+}
+
+.top-0 {
+    top: 0;
+}
+
+.start-100 {
+    left: 100%;
 }

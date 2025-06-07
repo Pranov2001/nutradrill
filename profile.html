@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - NutraDrill</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-card {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .user-info-header {
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 1rem;
+        }
+    </style>
+</head>
+<body style="background-color: #f4f6f9;">
+
+    <!-- Navbar (Other pages जैसा ही navbar) -->
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="profile-card p-4 mb-5">
+                    
+                    <!-- User Info Section -->
+                    <div class="user-info-header text-center mb-4">
+                        <img src="assets/images/default-avatar.png" 
+                            class="profile-pic rounded-circle border"
+                            alt="Profile Picture">
+                        <h2 class="mt-3 text-dark" id="userName"></h2>
+                        <p class="text-muted mb-0" id="userEmail"></p>
+                        <small class="text-success" id="emailVerifiedStatus"></small>
+                    </div>
+
+                    <!-- Profile Form -->
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Full Name</label>
+                            <input type="text" id="inputName" 
+                                   class="form-control"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Email Address</label>
+                            <input type="email" id="inputEmail" 
+                                   class="form-control" 
+                                   disabled>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Phone Number</label>
+                                    <input type="tel" id="inputPhone" 
+                                           class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Join Date</label>
+                                    <input type="text" id="inputJoinDate" 
+                                           class="form-control" 
+                                           disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Shipping Address</label>
+                            <textarea id="inputAddress" 
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+
+                        <!-- Alerts -->
+                        <div class="alert alert-danger d-none" id="errorAlert"></div>
+                        <div class="alert alert-success d-none" id="successAlert"></div>
+
+                        <!-- Action Buttons -->
+                        <button type="submit" 
+                                class="btn btn-dark btn-block py-2">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </form>
+
+                    <!-- Additional Options -->
+                    <div class="mt-4">
+                        <button onclick="sendPasswordReset()" 
+                                class="btn btn-outline-dark btn-block py-2">
+                            <i class="fas fa-lock mr-2"></i>Change Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyAdHNnWZufChxM9caKliILP8vzIAMwhLCg",
+  authDomain: "nutradrill11.firebaseapp.com",
+  projectId: "nutradrill11",
+  storageBucket: "nutradrill11.firebasestorage.app",
+  messagingSenderId: "67658609098",
+  appId: "1:67658609098:web:a4226454c20f93adae1f33",
+  measurementId: "G-ZV05G24HDR"
+};
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Auth State Listener
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                loadUserData(user);
+                setupRealTimeUpdates(user);
+            }
+        });
+
+        // Load User Data
+        async function loadUserData(user) {
+            try {
+                // Set Basic Info
+                document.getElementById('userName').textContent = user.displayName || 'NutraDrill User';
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('emailVerifiedStatus').textContent = 
+                    user.emailVerified ? '(Verified)' : '(Not Verified)';
+
+                // Set Form Values
+                document.getElementById('inputName').value = user.displayName || '';
+                document.getElementById('inputEmail').value = user.email;
+
+                // Load Additional Data
+                const snapshot = await database.ref('users/' + user.uid).once('value');
+                const userData = snapshot.val() || {};
+                
+                document.getElementById('inputPhone').value = userData.phone || '';
+                document.getElementById('inputAddress').value = userData.address || '';
+                document.getElementById('inputJoinDate').value = 
+                    new Date(userData.createdAt).toLocaleDateString() || 'N/A';
+
+            } catch (error) {
+                showAlert('error', 'Error loading profile data: ' + error.message);
+            }
+        }
+
+        // Update Profile
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const user = auth.currentUser;
+            const name = document.getElementById('inputName').value;
+            const phone = document.getElementById('inputPhone').value;
+            const address = document.getElementById('inputAddress').value;
+
+            try {
+                // Update Auth Profile
+                await user.updateProfile({ displayName: name });
+                
+                // Update Database
+                await database.ref('users/' + user.uid).update({
+                    phone: phone,
+                    address: address
+                });
+
+                // Refresh Display
+                document.getElementById('userName').textContent = name;
+                showAlert('success', 'Profile updated successfully!');
+
+            } catch (error) {
+                showAlert('error', error.message);
+            }
+        });
+
+        // Password Reset
+        async function sendPasswordReset() {
+            try {
+                await auth.sendPasswordResetEmail(auth.currentUser.email);
+                showAlert('success', 'Password reset email sent! Check your inbox.');
+            } catch (error) {
+                showAlert('error', error.message);
+            }
+        }
+
+        // Real-time Updates
+        function setupRealTimeUpdates(user) {
+            database.ref('users/' + user.uid).on('value', (snapshot) => {
+                const userData = snapshot.val() || {};
+                document.getElementById('inputPhone').value = userData.phone || '';
+                document.getElementById('inputAddress').value = userData.address || '';
+            });
+        }
+
+        // Alert System
+        function showAlert(type, message) {
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            
+            if (type === 'error') {
+                errorAlert.textContent = message;
+                errorAlert.classList.remove('d-none');
+                successAlert.classList.add('d-none');
+            } else {
+                successAlert.textContent = message;
+                successAlert.classList.remove('d-none');
+                errorAlert.classList.add('d-none');
+            }
+            
+            setTimeout(() => {
+                errorAlert.classList.add('d-none');
+                successAlert.classList.add('d-none');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
